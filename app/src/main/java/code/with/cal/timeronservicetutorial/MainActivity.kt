@@ -4,11 +4,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
-import android.text.format.Time
+import android.os.VibrationEffect
+import android.os.Vibrator
+import androidx.appcompat.app.AppCompatActivity
 import code.with.cal.timeronservicetutorial.databinding.ActivityMainBinding
 import kotlin.math.roundToInt
+
 
 class MainActivity : AppCompatActivity()
 {
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity()
         stopTimer()
         time = 0.0
         binding.timeTV.text = getTimeStringFromDouble(time)
+        vibeReset()
     }
 
     private fun startStopTimer()
@@ -43,6 +47,7 @@ class MainActivity : AppCompatActivity()
             stopTimer()
         else
             startTimer()
+        vibeReset()
     }
 
     private fun startTimer()
@@ -69,8 +74,24 @@ class MainActivity : AppCompatActivity()
             time = intent.getDoubleExtra(TimerService.TIME_EXTRA, 0.0)
             binding.timeTV.text = getTimeStringFromDouble(time)
         }
+
     }
 
+    private fun checkForAlarm(time: Int)
+    {
+        when(time){
+            80 -> vibeHint()
+            90 -> vibeHint()
+            100 -> vibeAlarm()
+            130 -> vibeHint()
+            140 -> vibeHint()
+            150 -> vibeAlarm()
+            250 -> vibeHint()
+            300 -> vibeAlarm()
+            850 -> vibeHint()
+            900 -> vibeAlarm()
+        }
+    }
     private fun getTimeStringFromDouble(time: Double): String
     {
         val resultInt = time.roundToInt()
@@ -79,8 +100,36 @@ class MainActivity : AppCompatActivity()
         val seconds = resultInt  % 600
         val tenthseconds = resultInt  % 10
 
+        checkForAlarm(resultInt)
+
         return makeTimeString(minutes, seconds, tenthseconds )
     }
 
-    private fun makeTimeString(min: Int, sec: Int, t_sec: Int): String = String.format("%02d:%02d.%01d", min, sec, t_sec)
+    private fun vibrate(time: Int)
+    {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(time.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            //deprecated in API 26
+            v.vibrate(time.toLong())
+        }
+    }
+
+    private fun vibeReset()
+    {
+        vibrate(50)
+    }
+
+    private fun vibeHint()
+    {
+        vibrate(50)
+    }
+
+    private fun vibeAlarm()
+    {
+        vibrate(500)
+    }
+
+    private fun makeTimeString(min: Int, sec: Int, tSec: Int): String = String.format("%02d:%02d.%01d", min, sec, tSec)
 }
