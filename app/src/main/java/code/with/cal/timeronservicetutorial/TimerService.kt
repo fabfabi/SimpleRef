@@ -14,7 +14,7 @@ class TimerService : Service()
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int
     {
         val time = intent.getDoubleExtra(TIME_EXTRA, 0.0)
-        timer.scheduleAtFixedRate(TimeTask(time), 0, 1000)
+        timer.scheduleAtFixedRate(TimeTask(time), 0, 100)
         return START_NOT_STICKY
     }
 

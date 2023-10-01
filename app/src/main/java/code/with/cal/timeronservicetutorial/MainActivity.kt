@@ -74,12 +74,13 @@ class MainActivity : AppCompatActivity()
     private fun getTimeStringFromDouble(time: Double): String
     {
         val resultInt = time.roundToInt()
-        val hours = resultInt % 86400 / 3600
-        val minutes = resultInt % 86400 % 3600 / 60
-        val seconds = resultInt % 86400 % 3600 % 60
 
-        return makeTimeString(hours, minutes, seconds)
+        val minutes = resultInt  / 600
+        val seconds = resultInt  % 600
+        val tenthseconds = resultInt  % 10
+
+        return makeTimeString(minutes, seconds, tenthseconds )
     }
 
-    private fun makeTimeString(hour: Int, min: Int, sec: Int): String = String.format("%02d:%02d:%02d", hour, min, sec)
+    private fun makeTimeString(min: Int, sec: Int, t_sec: Int): String = String.format("%02d:%02d.%01d", min, sec, t_sec)
 }
